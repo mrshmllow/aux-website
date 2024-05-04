@@ -14,7 +14,7 @@ in
 
     npmDepsHash = "sha256-ze98HddbmkSAgDxJIw1l2YH3EcJ8NKx6Gz++xbcxBM4=";
 
-    npmFlags = ["--ignore-scripts"];
+    npmFlags = ["--ignore-scripts"] ++ lib.optionals (!lib.trivial.inPureEvalMode) ["--" "--base" (builtins.getEnv "BASE")];
 
     installPhase = ''
       mkdir -p $out
