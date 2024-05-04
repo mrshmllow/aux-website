@@ -1,0 +1,60 @@
+name: "Update robots.txt"
+on:
+  schedule:
+  - cron: "0 0 * * 6"
+  workflow_dispatch:
+
+jobs:
+  update:
+    name: "Update"
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    env:
+      CURRENT_BRANCH: ${{ github.ref_name }}
+      PR_BRANCH: update-robots-${{ github.ref_name }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Git user info
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Create new branch
+        run: |
+          git switch -c "$PR_BRANCH"
+
+      - name: Pull latest robots
+        run: |
+          curl -X POST https://api.darkvisitors.com/robots-txts \
+              -H "Authorization: Bearer ${{ secrets.DarkVisitorsBearer }}" \
+              -H "Content-Type: application/json" \
+              --data-raw '{"agent_types": ["AI Assistant", "AI Data Scraper", "AI Search Crawler", "Undocumented AI Agent"]}' \
+              --output ./public/robots.txt
+
+      - name: Commit & Push
+        run: |
+          git add ./public/robots.txt
+
+          if ! git diff --color=always --exit-code origin/"$CURRENT_BRANCH"; then
+            git fetch origin "$PR_BRANCH" || true
+
+            git commit ./public/robots.txt -m "Update robots.txt"
+
+            git push --force-with-lease -u origin "$PR_BRANCH"
+          fi
+
+      - name: Create PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr create \
+              --base "$CURRENT_BRANCH" --head "$PR_BRANCH" --title "Update robots.txt $(date '+%Y %m %d')" --fill
+
