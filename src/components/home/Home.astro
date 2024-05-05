@@ -1,0 +1,17 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Hero from "../../components/Hero.astro";
+import Values from "../../components/Values.astro";
+import Goals from "../../components/Goals.astro";
+import Roadmap from "../../components/Roadmap.astro";
+---
+
+<main class="grid place-items-center">
+	<Hero />
+
+	<div class="prose prose-invert py-16 px-4 max-w-3xl">
+		<Values />
+		<Goals />
+		<Roadmap />
+	</div>
+</main>
