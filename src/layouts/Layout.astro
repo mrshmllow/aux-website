@@ -30,19 +30,3 @@ const { lang } = Astro.params as Params;
 		<slot />
 	</body>
 </html>
-<style is:global>
-	:root {
-		--accent: 136, 58, 234;
-		--background: 24, 24, 24;
-		--background-light: 34, 34, 38;
-		--text: 255, 255, 255;
-	}
-
-	html {
-		font-size: 16px;
-		font-family: system-ui, sans-serif;
-		color: rgb(var(--text));
-		background: rgb(var(--background));
-		background-size: 224px;
-	}
-</style>
